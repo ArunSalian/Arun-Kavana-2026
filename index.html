@@ -698,6 +698,140 @@
       footer { padding: 3rem 1rem 2rem; }
     }
 
+
+    /* ── ENVELOPE OVERLAY ── */
+    #env-overlay {
+      position: fixed; inset: 0;
+      background: radial-gradient(ellipse at 50% 42%, #2b3b2c 0%, #0e1810 100%);
+      z-index: 9999;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 2rem; overflow: hidden;
+      transition: opacity 1.2s ease, transform 1.2s ease;
+    }
+    #env-overlay::before {
+      content: ''; position: absolute;
+      inset: clamp(14px, 3vw, 28px);
+      border: 1px solid rgba(200,169,110,0.13);
+      pointer-events: none;
+    }
+    #env-overlay::after {
+      content: ''; position: absolute;
+      width: 700px; height: 700px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(200,169,110,0.05) 0%, transparent 70%);
+      top: 50%; left: 50%; transform: translate(-50%,-50%);
+      pointer-events: none;
+    }
+    #env-overlay.env-done { opacity: 0; transform: scale(1.04); pointer-events: none; }
+    .env-invite-tag {
+      font-family: var(--sans); font-size: clamp(0.58rem,1.4vw,0.68rem);
+      letter-spacing: 0.32em; text-transform: uppercase;
+      color: rgba(200,169,110,0.55); text-align: center;
+    }
+    #envelope {
+      position: relative;
+      width: min(360px, 88vw);
+      height: calc(min(360px, 88vw) * 0.667);
+      perspective: 900px;
+      filter: drop-shadow(0 28px 60px rgba(0,0,0,0.75));
+    }
+    .env-body {
+      position: absolute; inset: 0; border-radius: 3px;
+      background: linear-gradient(170deg, #ede4d4 0%, #f7f1e6 45%, #ede4d4 100%);
+      overflow: hidden;
+    }
+    .env-inner-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .env-flap {
+      position: absolute; top: 0; left: 0; right: 0; height: 52%;
+      transform-origin: center bottom; transform-style: preserve-3d;
+      transition: transform 1.5s cubic-bezier(0.4,0,0.2,1); z-index: 5;
+    }
+    .env-flap-face {
+      position: absolute; inset: 0;
+      clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
+      background: linear-gradient(168deg, #ddd0bb 0%, #c8b89a 60%, #b8a486 100%);
+    }
+    .env-flap::after {
+      content: ''; position: absolute; inset: 0;
+      clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
+      background: linear-gradient(to bottom, transparent 55%, rgba(0,0,0,0.14) 100%);
+      z-index: 1; pointer-events: none;
+    }
+    .env-flap.open { transform: rotateX(-185deg); }
+    .env-seal-anchor {
+      position: absolute; left: 50%; top: 50%;
+      transform: translate(-50%,-50%); z-index: 10;
+      transition: transform 0.9s ease, opacity 0.9s ease;
+    }
+    .env-seal-anchor.seal-dropped {
+      transform: translate(-50%, 28px); opacity: 0; pointer-events: none;
+    }
+    .env-seal {
+      width: clamp(68px, 20vw, 84px); height: clamp(68px, 20vw, 84px);
+      position: relative; cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none; touch-action: none;
+    }
+    .seal-ring-svg {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%,-50%); width: 140%; height: 140%; overflow: visible;
+    }
+    .seal-ring-bg { fill: none; stroke: rgba(200,169,110,0.2); stroke-width: 3; }
+    .seal-ring-prog {
+      fill: none; stroke: var(--gold); stroke-width: 3.5; stroke-linecap: round;
+      stroke-dasharray: 301.59; stroke-dashoffset: 301.59;
+      transform: rotate(-90deg); transform-origin: center; transform-box: fill-box;
+    }
+    .seal-disc {
+      position: absolute; inset: 0; border-radius: 50%;
+      background: radial-gradient(circle at 38% 32%, #7a3b1e 0%, #4a1e0a 55%, #361308 100%);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      box-shadow: 0 6px 22px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.14), inset 0 -2px 5px rgba(0,0,0,0.45);
+      overflow: hidden; animation: sealGlow 3s ease-in-out infinite;
+    }
+    @keyframes sealGlow {
+      0%,100% { box-shadow: 0 6px 22px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.14), inset 0 -2px 5px rgba(0,0,0,0.45), 0 0 0 0 rgba(200,169,110,0.35); }
+      50%      { box-shadow: 0 6px 22px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.14), inset 0 -2px 5px rgba(0,0,0,0.45), 0 0 0 18px rgba(200,169,110,0); }
+    }
+    .env-seal.pressing .seal-disc { animation: none; }
+    .seal-emblem {
+      width: 75%; height: 75%;
+      pointer-events: none;
+      position: relative; z-index: 2;
+    }
+    .seal-crack-svg {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      opacity: 0; transition: opacity 0.1s; pointer-events: none;
+    }
+    .env-seal.breaking .seal-crack-svg { opacity: 1; }
+    .seal-crack-line { stroke: rgba(255,240,200,0.9); fill: none; stroke-linecap: round; stroke-dasharray: 50; stroke-dashoffset: 50; }
+    .env-seal.breaking .seal-crack-line { animation: drawCrack 0.45s ease forwards; }
+    .env-seal.breaking .seal-crack-line:nth-child(2) { animation-delay: 0.08s; }
+    .env-seal.breaking .seal-crack-line:nth-child(3) { animation-delay: 0.16s; }
+    .env-seal.breaking .seal-crack-line:nth-child(4) { animation-delay: 0.06s; }
+    @keyframes drawCrack { to { stroke-dashoffset: 0; } }
+    .env-seal.breaking .seal-disc { animation: sealShake 0.45s ease forwards; }
+    @keyframes sealShake {
+      0%   { transform: scale(1) rotate(0deg); }
+      20%  { transform: scale(1.1) rotate(-5deg); }
+      40%  { transform: scale(1.05) rotate(4deg); }
+      60%  { transform: scale(0.97) rotate(-2deg); }
+      80%  { transform: scale(1.01) rotate(1deg); }
+      100% { transform: scale(1) rotate(0deg); }
+    }
+    .env-hint-area {
+      display: flex; flex-direction: column; align-items: center; gap: 0.7rem;
+      transition: opacity 0.5s ease;
+    }
+    .env-hint {
+      font-family: "Cormorant Garamond", Georgia, serif; font-style: italic;
+      font-size: clamp(0.82rem, 2.5vw, 0.98rem); color: rgba(255,255,255,0.48);
+      letter-spacing: 0.06em; text-align: center;
+    }
+    .env-hint-bar {
+      width: 44px; height: 1px;
+      background: linear-gradient(to right, transparent, rgba(200,169,110,0.4), transparent);
+    }
+
     /* ── REVEAL ANIMATIONS ── */
     .reveal {
       opacity: 0;
@@ -708,6 +842,72 @@
   </style>
 </head>
 <body>
+
+<!-- ++ ENVELOPE OVERLAY ++ -->
+<div id="env-overlay">
+  <p class="env-invite-tag">You are invited</p>
+  <div id="envelope">
+    <div class="env-body">
+      <svg class="env-inner-svg" viewBox="0 0 360 240" preserveAspectRatio="none">
+        <line x1="0" y1="0" x2="180" y2="120" stroke="rgba(90,70,40,0.1)" stroke-width="1"/>
+        <line x1="360" y1="0" x2="180" y2="120" stroke="rgba(90,70,40,0.1)" stroke-width="1"/>
+        <line x1="0" y1="240" x2="180" y2="120" stroke="rgba(90,70,40,0.1)" stroke-width="1"/>
+        <line x1="360" y1="240" x2="180" y2="120" stroke="rgba(90,70,40,0.1)" stroke-width="1"/>
+      </svg>
+    </div>
+    <div class="env-flap" id="envFlap">
+      <div class="env-flap-face"></div>
+    </div>
+    <div class="env-seal-anchor" id="envSealAnchor">
+      <div class="env-seal" id="envSeal">
+        <svg class="seal-ring-svg" viewBox="0 0 110 110">
+          <circle class="seal-ring-bg" cx="55" cy="55" r="48"/>
+          <circle class="seal-ring-prog" cx="55" cy="55" r="48" id="sealRingProg"/>
+        </svg>
+        <div class="seal-disc">
+          <svg class="seal-emblem" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- outer thin ring -->
+            <circle cx="30" cy="30" r="25.5" stroke="rgba(232,201,122,0.4)" stroke-width="0.7"/>
+            <!-- 4 compass dot accents -->
+            <circle cx="30" cy="5.5" r="1.4" fill="rgba(232,201,122,0.5)"/>
+            <circle cx="54.5" cy="30" r="1.4" fill="rgba(232,201,122,0.5)"/>
+            <circle cx="30" cy="54.5" r="1.4" fill="rgba(232,201,122,0.5)"/>
+            <circle cx="5.5" cy="30" r="1.4" fill="rgba(232,201,122,0.5)"/>
+            <!-- 8 petals (flower mandala) -->
+            <ellipse cx="30" cy="15" rx="3.4" ry="8" fill="rgba(232,201,122,0.62)"/>
+            <ellipse cx="30" cy="15" rx="3.4" ry="8" fill="rgba(232,201,122,0.52)" transform="rotate(45 30 30)"/>
+            <ellipse cx="30" cy="15" rx="3.4" ry="8" fill="rgba(232,201,122,0.62)" transform="rotate(90 30 30)"/>
+            <ellipse cx="30" cy="15" rx="3.4" ry="8" fill="rgba(232,201,122,0.52)" transform="rotate(135 30 30)"/>
+            <ellipse cx="30" cy="15" rx="3.4" ry="8" fill="rgba(232,201,122,0.62)" transform="rotate(180 30 30)"/>
+            <ellipse cx="30" cy="15" rx="3.4" ry="8" fill="rgba(232,201,122,0.52)" transform="rotate(225 30 30)"/>
+            <ellipse cx="30" cy="15" rx="3.4" ry="8" fill="rgba(232,201,122,0.62)" transform="rotate(270 30 30)"/>
+            <ellipse cx="30" cy="15" rx="3.4" ry="8" fill="rgba(232,201,122,0.52)" transform="rotate(315 30 30)"/>
+            <!-- inner ring cover -->
+            <circle cx="30" cy="30" r="8" fill="rgba(58,19,8,0.95)" stroke="rgba(232,201,122,0.6)" stroke-width="0.8"/>
+            <!-- center dot -->
+            <circle cx="30" cy="30" r="2.8" fill="rgba(232,201,122,0.88)"/>
+            <!-- 4 tiny spokes in center -->
+            <line x1="30" y1="24.5" x2="30" y2="26.5" stroke="rgba(232,201,122,0.55)" stroke-width="0.7"/>
+            <line x1="30" y1="33.5" x2="30" y2="35.5" stroke="rgba(232,201,122,0.55)" stroke-width="0.7"/>
+            <line x1="24.5" y1="30" x2="26.5" y2="30" stroke="rgba(232,201,122,0.55)" stroke-width="0.7"/>
+            <line x1="33.5" y1="30" x2="35.5" y2="30" stroke="rgba(232,201,122,0.55)" stroke-width="0.7"/>
+          </svg>
+          <svg class="seal-crack-svg" viewBox="0 0 80 80">
+            <polyline class="seal-crack-line" points="40,16 35,30 28,43" stroke-width="1.5"/>
+            <polyline class="seal-crack-line" points="40,16 47,29 54,41" stroke-width="1.5"/>
+            <polyline class="seal-crack-line" points="40,62 37,50 32,42" stroke-width="1"/>
+            <polyline class="seal-crack-line" points="56,52 47,42 43,33" stroke-width="1"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="env-hint-area" id="envHintArea">
+    <p class="env-hint" id="envHint">Hold to open</p>
+    <div class="env-hint-bar"></div>
+  </div>
+</div>
+
 
 <!-- ── SCRIPTURE BANNER ── -->
 <div class="scripture-banner">
@@ -1096,6 +1296,81 @@
     document.getElementById('formFields').style.display = 'none';
     document.getElementById('formSuccess').style.display = 'block';
   }
+
+  // ++ ENVELOPE LONG PRESS ++
+  (function () {
+    var overlay    = document.getElementById('env-overlay');
+    var seal       = document.getElementById('envSeal');
+    var sealAnchor = document.getElementById('envSealAnchor');
+    var flap       = document.getElementById('envFlap');
+    var hint       = document.getElementById('envHint');
+    var hintArea   = document.getElementById('envHintArea');
+    var ringProg   = document.getElementById('sealRingProg');
+
+    var HOLD_MS = 2000, CIRC = 301.59;
+    var pressing = false, opened = false, rafId = null, startTime = null;
+
+    document.body.style.overflow = 'hidden';
+
+    function startPress(e) {
+      if (opened || pressing) return;
+      e.preventDefault();
+      pressing = true;
+      startTime = performance.now();
+      seal.classList.add('pressing');
+      hint.textContent = 'Keep holding...';
+
+      function tick(now) {
+        if (!pressing) return;
+        var p = Math.min((now - startTime) / HOLD_MS, 1);
+        ringProg.style.strokeDashoffset = CIRC * (1 - p);
+        if (p >= 1) { triggerBreak(); return; }
+        rafId = requestAnimationFrame(tick);
+      }
+      rafId = requestAnimationFrame(tick);
+    }
+
+    function cancelPress() {
+      if (!pressing) return;
+      pressing = false;
+      seal.classList.remove('pressing');
+      if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+      ringProg.style.transition = 'stroke-dashoffset 0.5s ease';
+      ringProg.style.strokeDashoffset = CIRC;
+      setTimeout(function(){ ringProg.style.transition = ''; }, 500);
+      hint.textContent = 'Hold to open';
+    }
+
+    function triggerBreak() {
+      pressing = false; opened = true;
+      seal.classList.remove('pressing');
+      if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+      if (navigator.vibrate) navigator.vibrate([20, 30, 60]);
+      seal.classList.add('breaking');
+      hint.textContent = '';
+
+      setTimeout(function () {
+        flap.classList.add('open');
+        sealAnchor.classList.add('seal-dropped');
+        hintArea.style.opacity = '0';
+      }, 560);
+
+      setTimeout(function () {
+        overlay.classList.add('env-done');
+        document.body.style.overflow = '';
+      }, 2300);
+
+      setTimeout(function () {
+        if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+      }, 3600);
+    }
+
+    seal.addEventListener('pointerdown',   startPress,   { passive: false });
+    seal.addEventListener('pointerup',     cancelPress);
+    seal.addEventListener('pointerleave',  cancelPress);
+    seal.addEventListener('pointercancel', cancelPress);
+    seal.addEventListener('contextmenu',   function(e){ e.preventDefault(); });
+  })();
 </script>
 </body>
 </html>
