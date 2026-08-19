@@ -116,7 +116,7 @@
     /* ── Arun & Kavana — elegant serif, same line ── */
     .couple-name {
       font-family: 'Cormorant Garamond', Georgia, serif;
-      font-size: clamp(3rem, 10vw, 7rem);
+      font-size: clamp(2.6rem, 9vw, 7rem);
       font-weight: 300;
       color: var(--white);
       line-height: 1;
@@ -589,6 +589,115 @@
     .footer-links a:hover { color: var(--gold); }
     .footer-credit { font-family: var(--sans); font-size: .65rem; letter-spacing: .1em; color: rgba(255,255,255,.2); }
 
+    /* ── RESPONSIVE — TABLET (≤768px) ── */
+    @media (max-width: 768px) {
+      section { padding: 4rem 1.2rem; }
+
+      #hero { min-height: 100svh; }
+      .hero-content { gap: .75rem; padding: 0 1rem; }
+      .hero-tag { font-size: .62rem; letter-spacing: .22em; }
+
+      .couple-name { font-size: clamp(2.4rem, 11vw, 5rem); }
+
+      .hero-date { gap: .45rem; flex-wrap: wrap; justify-content: center; }
+      .hero-date-month,
+      .hero-date-day,
+      .hero-date-year { font-size: .82rem; letter-spacing: .2em; }
+
+      .hero-location { font-size: .72rem; }
+
+      .section-title { font-size: clamp(2rem, 7vw, 3rem); }
+
+      /* countdown — hide colon separators when stacking */
+      .countdown-grid { gap: 1rem; }
+      .countdown-unit { min-width: 70px; }
+      .countdown-num { font-size: clamp(2.4rem, 9vw, 4rem); }
+      .countdown-sep { font-size: clamp(2rem, 7vw, 3.5rem); }
+
+      /* events — single column */
+      .events-grid { grid-template-columns: 1fr; max-width: 480px; margin: 0 auto; }
+      .event-card:hover { transform: none; }
+
+      /* buttons — bigger tap targets */
+      .btn { padding: .85rem 1.4rem; font-size: .75rem; min-height: 44px; }
+      .event-card-actions { gap: .6rem; }
+
+      /* rsvp form */
+      .rsvp-form { padding: 2rem 1.2rem; }
+      .form-row { grid-template-columns: 1fr; gap: 0; }
+      .form-control { font-size: .95rem; padding: .85rem 1rem; min-height: 48px; }
+      .attend-opt label { padding: .85rem .4rem; min-height: 48px; display: flex; align-items: center; justify-content: center; }
+      .check-item { font-size: .88rem; padding: .3rem 0; }
+      .check-item input[type="checkbox"] { width: 20px; height: 20px; }
+      .form-submit { padding: 1.1rem; font-size: .82rem; min-height: 52px; }
+
+      /* faq */
+      .faq-q { font-size: .98rem; padding: 1rem 1.2rem; min-height: 52px; }
+      .faq-a-inner { padding: .9rem 1.2rem 1rem; font-size: .95rem; }
+
+      /* footer */
+      .footer-links { gap: 1.2rem; }
+    }
+
+    /* ── RESPONSIVE — MOBILE (≤480px) ── */
+    @media (max-width: 480px) {
+      section { padding: 3.5rem 1rem; }
+
+      .scripture-banner { padding: .75rem 1rem; }
+      .scripture-banner p { font-size: .78rem; line-height: 1.6; }
+
+      #hero { min-height: 100svh; }
+      .hero-content { gap: .65rem; }
+      .couple-name {
+        font-size: clamp(2rem, 12vw, 3.5rem);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+      }
+      .hero-date { gap: .35rem; }
+      .hero-date-month,
+      .hero-date-day,
+      .hero-date-year { font-size: .72rem; letter-spacing: .16em; }
+      .hero-date-dot { font-size: .4em; }
+      .hero-location { font-size: .68rem; letter-spacing: .1em; }
+      .hero-scroll { bottom: 1.5rem; }
+
+      /* countdown — hide separators on very small screens */
+      .countdown-sep { display: none; }
+      .countdown-grid { gap: .5rem 1.8rem; }
+      .countdown-unit { min-width: 60px; }
+      .countdown-num { font-size: clamp(2.2rem, 11vw, 3.5rem); }
+      .countdown-label { font-size: .58rem; }
+
+      /* section typography */
+      .section-title { font-size: clamp(1.9rem, 8vw, 2.6rem); }
+      .section-tag { font-size: .6rem; letter-spacing: .22em; }
+
+      /* event cards */
+      .event-card-header { padding: 1.4rem 1.4rem 1rem; }
+      .event-card-name { font-size: 1.7rem; }
+      .event-card-body { padding: 1.4rem; gap: .8rem; }
+      .event-card-actions { padding: 0 1.4rem 1.4rem; flex-direction: column; }
+      .btn { width: 100%; text-align: center; justify-content: center; }
+
+      /* quote section */
+      #greeting { padding: 3rem 1.2rem !important; }
+
+      /* rsvp */
+      .rsvp-form { padding: 1.8rem 1rem; border-radius: 4px; }
+      .attend-options { flex-direction: column; }
+      .attend-opt { min-width: 100%; }
+
+      /* faq */
+      .faq-q { font-size: .92rem; }
+
+      /* footer */
+      .footer-title { font-size: clamp(1.8rem, 8vw, 2.8rem); }
+      .footer-links { gap: 1rem; }
+      footer { padding: 3rem 1rem 2rem; }
+    }
+
     /* ── REVEAL ANIMATIONS ── */
     .reveal {
       opacity: 0;
@@ -937,42 +1046,51 @@
     if (!isOpen) item.classList.add('open');
   }
 
-  // ── RSVP SUBMIT + EMAIL via Formspree ──
-  // To activate: sign up free at formspree.io, create a form pointed at arun.salian97@gmail.com,
-  // then replace YOUR_FORM_ID below with the ID you receive.
-  const FORMSPREE_ID = 'YOUR_FORM_ID';
+  // ── RSVP SUBMIT + EMAIL via Web3Forms ──
+  // To activate: go to https://web3forms.com, enter arun.salian97@gmail.com,
+  // get your access key from Gmail, and replace YOUR_ACCESS_KEY below.
+  const WEB3FORMS_KEY = '879438f6-5cff-4112-8f42-2153910f7b6b';
 
   async function submitRSVP() {
     const firstName = document.getElementById('firstName').value.trim();
     const lastName  = document.getElementById('lastName').value.trim();
     if (!firstName || !lastName) { alert('Please enter your name.'); return; }
 
-    const attend   = document.querySelector('input[name="attend"]:checked')?.value || 'not specified';
-    const events   = ['ev-wedding','ev-reception'].filter(id => document.getElementById(id).checked)
-                       .map(id => id === 'ev-wedding' ? 'Wedding (Sep 30)' : 'Reception (Oct 02)').join(', ') || 'None selected';
-    const side     = document.getElementById('side').value || 'not specified';
-    const phone    = document.getElementById('phone').value.trim() || 'not provided';
-    const message  = document.getElementById('message').value.trim() || '';
+    const attend  = document.querySelector('input[name="attend"]:checked')?.value || 'Not specified';
+    const events  = ['ev-wedding','ev-reception']
+                      .filter(id => document.getElementById(id).checked)
+                      .map(id => id === 'ev-wedding' ? 'Wedding (Sep 30, Chikmagalur)' : 'Reception (Oct 02, Mangalore)')
+                      .join(' & ') || 'None selected';
+    const side    = document.getElementById('side').value || 'Not specified';
+    const phone   = document.getElementById('phone').value.trim() || 'Not provided';
+    const message = document.getElementById('message').value.trim() || '—';
 
-    const payload = {
-      name:    `${firstName} ${lastName}`,
-      phone,
-      attend,
-      events,
-      side,
-      message,
-      _subject: `RSVP from ${firstName} ${lastName} — Arun & Kavana Wedding`,
-      _replyto: 'arun.salian97@gmail.com',
-    };
+    const btn = document.querySelector('.form-submit');
+    btn.textContent = 'Sending…';
+    btn.disabled = true;
 
-    if (FORMSPREE_ID !== 'YOUR_FORM_ID') {
-      try {
-        await fetch(`https://formspree.io/f/${FORMSPREE_ID}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-          body: JSON.stringify(payload),
-        });
-      } catch(e) { console.warn('Email send failed:', e); }
+    try {
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          access_key: WEB3FORMS_KEY,
+          subject: `RSVP — ${firstName} ${lastName} · Arun & Kavana Wedding`,
+          from_name: `${firstName} ${lastName}`,
+          name:    `${firstName} ${lastName}`,
+          phone,
+          attending: attend,
+          events,
+          side,
+          message,
+        }),
+      });
+      const data = await res.json();
+      if (!data.success && WEB3FORMS_KEY !== 'YOUR_ACCESS_KEY') {
+        console.warn('Web3Forms error:', data);
+      }
+    } catch(e) {
+      console.warn('Email send failed:', e);
     }
 
     document.getElementById('formFields').style.display = 'none';
