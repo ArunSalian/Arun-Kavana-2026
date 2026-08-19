@@ -1063,7 +1063,7 @@
                       .join(' & ') || 'None selected';
     const side    = document.getElementById('side').value || 'Not specified';
     const phone   = document.getElementById('phone').value.trim() || 'Not provided';
-    const message = document.getElementById('message').value.trim() || '—';
+    const guestMessage = document.getElementById('message').value.trim() || '—';
 
     const btn = document.querySelector('.form-submit');
     btn.textContent = 'Sending…';
@@ -1082,7 +1082,7 @@
           attending: attend,
           events,
           side,
-          message,
+          "Message to Couple": guestMessage,
         }),
       });
       const data = await res.json();
