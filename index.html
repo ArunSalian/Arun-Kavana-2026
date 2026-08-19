@@ -702,6 +702,9 @@
     /* ── ENVELOPE OVERLAY ── */
     #env-overlay {
       position: fixed; inset: 0;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
       background: radial-gradient(ellipse at 50% 42%, #2b3b2c 0%, #0e1810 100%);
       z-index: 9999;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -769,7 +772,10 @@
       width: clamp(68px, 20vw, 84px); height: clamp(68px, 20vw, 84px);
       position: relative; cursor: pointer;
       -webkit-tap-highlight-color: transparent;
-      user-select: none; touch-action: none;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
+      touch-action: none;
     }
     .seal-ring-svg {
       position: absolute; top: 50%; left: 50%;
@@ -787,6 +793,7 @@
       display: flex; flex-direction: column; align-items: center; justify-content: center;
       box-shadow: 0 6px 22px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.14), inset 0 -2px 5px rgba(0,0,0,0.45);
       overflow: hidden; animation: sealGlow 3s ease-in-out infinite;
+      -webkit-touch-callout: none;
     }
     @keyframes sealGlow {
       0%,100% { box-shadow: 0 6px 22px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.14), inset 0 -2px 5px rgba(0,0,0,0.45), 0 0 0 0 rgba(200,169,110,0.35); }
@@ -1390,6 +1397,8 @@
       }, 3600);
     }
 
+    // Block iOS long-press callout (prevents zoom-popup on iPhone)
+    seal.addEventListener('touchstart', function(e){ e.preventDefault(); }, { passive: false });
     seal.addEventListener('pointerdown',   startPress,  { passive: false });
     seal.addEventListener('pointermove',   onMove,      { passive: true });
     seal.addEventListener('pointerup',     cancelPress);
