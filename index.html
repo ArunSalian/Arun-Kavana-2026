@@ -732,12 +732,12 @@
       width: min(360px, 88vw);
       height: calc(min(360px, 88vw) * 0.667);
       perspective: 900px;
-      filter: drop-shadow(0 28px 60px rgba(0,0,0,0.75));
     }
     .env-body {
       position: absolute; inset: 0; border-radius: 3px;
       background: linear-gradient(170deg, #ede4d4 0%, #f7f1e6 45%, #ede4d4 100%);
       overflow: hidden;
+      box-shadow: 0 28px 60px rgba(0,0,0,0.75), 0 4px 20px rgba(0,0,0,0.5);
     }
     .env-inner-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
     .env-flap {
@@ -1307,18 +1307,36 @@
     var hintArea   = document.getElementById('envHintArea');
     var ringProg   = document.getElementById('sealRingProg');
 
-    var HOLD_MS = 2000, CIRC = 301.59;
+    var HOLD_MS = 2000, CIRC = 301.59, DRIFT_PX = 16;
     var pressing = false, opened = false, rafId = null, startTime = null;
+    var startX = 0, startY = 0;
 
-    document.body.style.overflow = 'hidden';
+    // iOS-safe scroll lock
+    var _scrollY = 0;
+    function lockScroll() {
+      _scrollY = window.scrollY || window.pageYOffset;
+      document.body.style.position = 'fixed';
+      document.body.style.top = '-' + _scrollY + 'px';
+      document.body.style.width = '100%';
+      document.body.style.overflow = 'hidden';
+    }
+    function unlockScroll() {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      document.body.style.overflow = '';
+      window.scrollTo(0, _scrollY);
+    }
+    lockScroll();
 
     function startPress(e) {
       if (opened || pressing) return;
       e.preventDefault();
       pressing = true;
+      startX = e.clientX; startY = e.clientY;
       startTime = performance.now();
       seal.classList.add('pressing');
-      hint.textContent = 'Keep holding...';
+      hint.textContent = 'Keep holding…';
 
       function tick(now) {
         if (!pressing) return;
@@ -1341,6 +1359,13 @@
       hint.textContent = 'Hold to open';
     }
 
+    // Cancel only if finger drifts > DRIFT_PX (avoids false cancels on mobile)
+    function onMove(e) {
+      if (!pressing) return;
+      var dx = e.clientX - startX, dy = e.clientY - startY;
+      if (Math.sqrt(dx * dx + dy * dy) > DRIFT_PX) cancelPress();
+    }
+
     function triggerBreak() {
       pressing = false; opened = true;
       seal.classList.remove('pressing');
@@ -1357,7 +1382,7 @@
 
       setTimeout(function () {
         overlay.classList.add('env-done');
-        document.body.style.overflow = '';
+        unlockScroll();
       }, 2300);
 
       setTimeout(function () {
@@ -1365,9 +1390,9 @@
       }, 3600);
     }
 
-    seal.addEventListener('pointerdown',   startPress,   { passive: false });
+    seal.addEventListener('pointerdown',   startPress,  { passive: false });
+    seal.addEventListener('pointermove',   onMove,      { passive: true });
     seal.addEventListener('pointerup',     cancelPress);
-    seal.addEventListener('pointerleave',  cancelPress);
     seal.addEventListener('pointercancel', cancelPress);
     seal.addEventListener('contextmenu',   function(e){ e.preventDefault(); });
   })();
