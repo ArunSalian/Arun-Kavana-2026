@@ -95,7 +95,9 @@
       letter-spacing: .22em;
       color: var(--gold);
       text-transform: uppercase;
-      margin-left: .5rem;
+      display: block;
+      margin-top: .35rem;
+      text-align: center;
     }
     .hero-tag {
       font-family: var(--sans);
@@ -724,7 +726,7 @@
       top: 50%; left: 50%; transform: translate(-50%,-50%);
       pointer-events: none;
     }
-    #env-overlay.env-done { opacity: 0; transform: scale(1.04); pointer-events: none; }
+    #env-overlay.env-done { opacity: 0; transform: translateY(-36px); pointer-events: none; }
     .env-invite-tag {
       font-family: var(--sans); font-size: clamp(0.58rem,1.4vw,0.68rem);
       letter-spacing: 0.32em; text-transform: uppercase;
@@ -734,35 +736,58 @@
       position: relative;
       width: min(360px, 88vw);
       height: calc(min(360px, 88vw) * 0.667);
-      perspective: 900px;
+      perspective: 800px;
+      perspective-origin: 50% 25%;
+      transform-style: preserve-3d;
     }
     .env-body {
       position: absolute; inset: 0; border-radius: 3px;
       background: linear-gradient(170deg, #ede4d4 0%, #f7f1e6 45%, #ede4d4 100%);
       overflow: hidden;
       box-shadow: 0 28px 60px rgba(0,0,0,0.75), 0 4px 20px rgba(0,0,0,0.5);
+      transform: translateZ(0px);
+    }
+    .env-body::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 4px;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.15), transparent);
+      z-index: 10;
     }
     .env-inner-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
     .env-flap {
       position: absolute; top: 0; left: 0; right: 0; height: 52%;
-      transform-origin: center bottom; transform-style: preserve-3d;
-      transition: transform 1.5s cubic-bezier(0.4,0,0.2,1); z-index: 5;
+      transform-origin: center bottom;
+      transform-style: preserve-3d;
+      transition: transform 1.6s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 5;
     }
     .env-flap-face {
       position: absolute; inset: 0;
       clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
       background: linear-gradient(168deg, #ddd0bb 0%, #c8b89a 60%, #b8a486 100%);
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+    }
+    .env-flap-back {
+      position: absolute; inset: 0;
+      clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
+      background: linear-gradient(180deg, #f5ede0 0%, #ede4d4 100%);
+      transform: rotateX(-180deg);
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
     }
     .env-flap::after {
       content: ''; position: absolute; inset: 0;
       clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
-      background: linear-gradient(to bottom, transparent 55%, rgba(0,0,0,0.14) 100%);
-      z-index: 1; pointer-events: none;
+      background: linear-gradient(to bottom, transparent 55%, rgba(0,0,0,0.12) 100%);
+      z-index: 2; pointer-events: none;
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
     }
-    .env-flap.open { transform: rotateX(-185deg); }
+    .env-flap.open { transform: rotateX(-180deg); }
     .env-seal-anchor {
       position: absolute; left: 50%; top: 50%;
-      transform: translate(-50%,-50%); z-index: 10;
+      transform: translate(-50%,-50%) translateZ(8px); z-index: 10;
       transition: transform 0.9s ease, opacity 0.9s ease;
     }
     .env-seal-anchor.seal-dropped {
@@ -825,6 +850,51 @@
       80%  { transform: scale(1.01) rotate(1deg); }
       100% { transform: scale(1) rotate(0deg); }
     }
+    /* card that slides up from envelope */
+    .env-card {
+      position: absolute;
+      left: 8%; right: 8%; bottom: 0;
+      height: 88%;
+      background: linear-gradient(165deg, #fdf9f3 0%, #f5ece0 100%);
+      border-radius: 2px 2px 0 0;
+      z-index: 3;
+      transform: translateY(10%) translateZ(-5px);
+      opacity: 0;
+      transition: transform 2.2s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.8s ease;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 0.4rem;
+      box-shadow: 0 -6px 28px rgba(0,0,0,0.22);
+      pointer-events: none;
+    }
+    .env-card.peek { transform: translateY(-52%) translateZ(35px) rotateX(-8deg); opacity: 1; }
+.env-card-names {
+      font-family: "Cormorant Garamond", Georgia, serif;
+      font-size: clamp(1.35rem, 4.5vw, 1.85rem);
+      font-weight: 300; color: var(--forest);
+      letter-spacing: 0.06em; line-height: 1;
+      white-space: nowrap;
+    }
+    .env-card-amp {
+      font-family: "Great Vibes", cursive;
+      font-size: 0.55em; color: var(--gold);
+      margin: 0 0.12em; vertical-align: middle;
+    }
+    .env-card-firstname { display: inline; }
+    .env-card-rule {
+      width: 36px; height: 1px;
+      background: linear-gradient(to right, transparent, rgba(200,169,110,0.55), transparent);
+    }
+    .env-card-date {
+      display: flex; align-items: baseline; gap: 0.38rem;
+      font-family: "Montserrat", sans-serif;
+      font-size: clamp(0.54rem, 1.5vw, 0.64rem);
+      font-weight: 400; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--forest);
+    }
+    .env-card-dot {
+      font-size: 0.5em; color: var(--gold); opacity: 0.7;
+      vertical-align: middle;
+    }
     .env-hint-area {
       display: flex; flex-direction: column; align-items: center; gap: 0.7rem;
       transition: opacity 0.5s ease;
@@ -862,8 +932,24 @@
         <line x1="360" y1="240" x2="180" y2="120" stroke="rgba(90,70,40,0.1)" stroke-width="1"/>
       </svg>
     </div>
+    <div class="env-card" id="envCard">
+<h2 class="env-card-names">
+        <span class="env-card-firstname">Arun</span>
+        <span class="env-card-amp">&amp;</span>
+        <span class="env-card-firstname">Kavana</span>
+      </h2>
+      <div class="env-card-rule"></div>
+      <div class="env-card-date">
+        <span>September</span>
+        <span class="env-card-dot">&#10022;</span>
+        <span>30</span>
+        <span class="env-card-dot">&#10022;</span>
+        <span>2026</span>
+      </div>
+    </div>
     <div class="env-flap" id="envFlap">
       <div class="env-flap-face"></div>
+      <div class="env-flap-back"></div>
     </div>
     <div class="env-seal-anchor" id="envSealAnchor">
       <div class="env-seal" id="envSeal">
@@ -918,7 +1004,8 @@
 
 <!-- ── SCRIPTURE BANNER ── -->
 <div class="scripture-banner">
-  <p>"Therefore what God has joined together, let no one separate." <cite>Mark 10:9</cite></p>
+  <p>"Therefore what God has joined together, let no one separate."</p>
+  <cite>Mark 10:9</cite>
 </div>
 
 <!-- ── HERO ── -->
@@ -1091,11 +1178,11 @@
           <label class="form-label">Which Events?</label>
           <div class="checkbox-group">
             <label class="check-item">
-              <input type="checkbox" id="ev-wedding" value="wedding" checked />
+              <input type="checkbox" id="ev-wedding" value="wedding" />
               Wedding — Wed, 30 Sep, Chikmagalur
             </label>
             <label class="check-item">
-              <input type="checkbox" id="ev-reception" value="reception" checked />
+              <input type="checkbox" id="ev-reception" value="reception" />
               Reception — Fri, 02 Oct, Mangalore
             </label>
           </div>
@@ -1112,6 +1199,25 @@
         </div>
 
         <div class="form-group">
+          <label class="form-label">How many people are attending? <span style="font-size:0.75em;opacity:0.6;font-weight:400">(including yourself)</span></label>
+          <select class="form-control" id="guestCount" onchange="updateGuestNames()">
+            <option value="1">Just me</option>
+            <option value="2">2 people</option>
+            <option value="3">3 people</option>
+            <option value="4">4 people</option>
+            <option value="5">5 people</option>
+            <option value="6">6 people</option>
+            <option value="7">7 people</option>
+            <option value="8">8 people</option>
+          </select>
+        </div>
+
+        <div class="form-group" id="guestNamesGroup" style="display:none">
+          <label class="form-label">Guest Names</label>
+          <div id="guestNameFields"></div>
+        </div>
+
+        <div class="form-group">
           <label class="form-label">Message to the Couple</label>
           <textarea class="form-control" id="message" placeholder="Your wishes, love, or funny story…"></textarea>
         </div>
@@ -1122,7 +1228,7 @@
       <div class="form-success" id="formSuccess">
         <span class="form-success-icon">💌</span>
         <h3>Thank you!</h3>
-        <p>We can't wait to celebrate with you. See you on September 30!</p>
+        <p>We can't wait to celebrate with you. <span id="seeYouMsg">See you on September 30!</span></p>
       </div>
     </div>
   </div>
@@ -1172,7 +1278,7 @@
           <span class="faq-arrow">▼</span>
         </button>
         <div class="faq-a">
-          <div class="faq-a-inner">The drive from Chikmagalur to Mangalore is approximately 2.5–3 hours via NH75. We recommend leaving the morning of October 1st if you're travelling between venues.</div>
+          <div class="faq-a-inner">The drive from Chikmagalur to Mangalore is approximately 4–4.5 hours via NH75. We recommend leaving the morning of October 1st if you're travelling between venues.</div>
         </div>
       </div>
 
@@ -1254,9 +1360,29 @@
   }
 
   // ── RSVP SUBMIT + EMAIL via Web3Forms ──
-  // To activate: go to https://web3forms.com, enter arun.salian97@gmail.com,
-  // get your access key from Gmail, and replace YOUR_ACCESS_KEY below.
+  // Arun's key (arun.salian97@gmail.com) — already active
   const WEB3FORMS_KEY = '879438f6-5cff-4112-8f42-2153910f7b6b';
+  // Kavana's key — go to https://web3forms.com, sign up with kavanaam2000@gmail.com,
+  // confirm the email, copy the access key and paste it below.
+  const KAVANA_KEY = 'YOUR_KAVANA_KEY_HERE';
+
+  function updateGuestNames() {
+    var count = parseInt(document.getElementById('guestCount').value) || 1;
+    var group = document.getElementById('guestNamesGroup');
+    var container = document.getElementById('guestNameFields');
+    if (count <= 1) { group.style.display = 'none'; return; }
+    group.style.display = 'block';
+    container.innerHTML = '';
+    for (var i = 2; i <= count; i++) {
+      var inp = document.createElement('input');
+      inp.type = 'text';
+      inp.className = 'form-control';
+      inp.id = 'guest-' + i;
+      inp.placeholder = 'Guest ' + (i - 1) + ' full name';
+      inp.style.marginBottom = '0.5rem';
+      container.appendChild(inp);
+    }
+  }
 
   async function submitRSVP() {
     const firstName = document.getElementById('firstName').value.trim();
@@ -1264,6 +1390,8 @@
     if (!firstName || !lastName) { alert('Please enter your name.'); return; }
 
     const attend  = document.querySelector('input[name="attend"]:checked')?.value || 'Not specified';
+    const weddingChecked   = document.getElementById('ev-wedding').checked;
+    const receptionChecked = document.getElementById('ev-reception').checked;
     const events  = ['ev-wedding','ev-reception']
                       .filter(id => document.getElementById(id).checked)
                       .map(id => id === 'ev-wedding' ? 'Wedding (Sep 30, Chikmagalur)' : 'Reception (Oct 02, Mangalore)')
@@ -1271,35 +1399,56 @@
     const side    = document.getElementById('side').value || 'Not specified';
     const phone   = document.getElementById('phone').value.trim() || 'Not provided';
     const guestMessage = document.getElementById('message').value.trim() || '—';
+    const guestCount = parseInt(document.getElementById('guestCount').value) || 1;
+    const guestNames = [];
+    for (let i = 2; i <= guestCount; i++) {
+      const el = document.getElementById('guest-' + i);
+      if (el && el.value.trim()) guestNames.push(el.value.trim());
+    }
 
     const btn = document.querySelector('.form-submit');
     btn.textContent = 'Sending…';
     btn.disabled = true;
 
+    const payload = {
+      subject: `RSVP — ${firstName} ${lastName} · Arun & Kavana Wedding`,
+      from_name: `${firstName} ${lastName}`,
+      name:    `${firstName} ${lastName}`,
+      phone,
+      attending: attend,
+      events,
+      side,
+      "Guest Count": guestCount,
+      "Guest Names": guestNames.length ? guestNames.join(', ') : '—',
+      "Message to Couple": guestMessage,
+    };
+
+    // Send to Arun
     try {
       const res = await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify({
-          access_key: WEB3FORMS_KEY,
-          subject: `RSVP — ${firstName} ${lastName} · Arun & Kavana Wedding`,
-          from_name: `${firstName} ${lastName}`,
-          name:    `${firstName} ${lastName}`,
-          phone,
-          attending: attend,
-          events,
-          side,
-          "Message to Couple": guestMessage,
-        }),
+        body: JSON.stringify({ access_key: WEB3FORMS_KEY, ...payload }),
       });
       const data = await res.json();
-      if (!data.success && WEB3FORMS_KEY !== 'YOUR_ACCESS_KEY') {
-        console.warn('Web3Forms error:', data);
-      }
-    } catch(e) {
-      console.warn('Email send failed:', e);
+      if (!data.success) console.warn('Arun Web3Forms error:', data);
+    } catch(e) { console.warn('Arun email failed:', e); }
+
+    // Send to Kavana (once KAVANA_KEY is set)
+    if (KAVANA_KEY !== 'YOUR_KAVANA_KEY_HERE') {
+      try {
+        await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({ access_key: KAVANA_KEY, ...payload }),
+        });
+      } catch(e) { console.warn('Kavana email failed:', e); }
     }
 
+    const seeYouMsg = (!weddingChecked && receptionChecked)
+      ? 'See you on October 2nd!'
+      : 'See you on September 30!';
+    document.getElementById('seeYouMsg').textContent = seeYouMsg;
     document.getElementById('formFields').style.display = 'none';
     document.getElementById('formSuccess').style.display = 'block';
   }
@@ -1387,14 +1536,27 @@
         hintArea.style.opacity = '0';
       }, 560);
 
+      // Unlock envelope clip + slide card up (after flap fully open)
+      setTimeout(function () {
+        var envEl = document.getElementById('envelope');
+        var card  = document.getElementById('envCard');
+        if (card)  card.classList.add('peek');
+      }, 950);
+
+      // Hide flap after animation so it never blocks the card
+      setTimeout(function () {
+        var f = document.getElementById('envFlap');
+        if (f) f.style.display = 'none';
+      }, 1450);
+
       setTimeout(function () {
         overlay.classList.add('env-done');
         unlockScroll();
-      }, 2300);
+      }, 3800);
 
       setTimeout(function () {
         if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
-      }, 3600);
+      }, 5100);
     }
 
     // Block iOS long-press callout (prevents zoom-popup on iPhone)
