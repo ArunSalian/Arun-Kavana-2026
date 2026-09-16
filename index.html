@@ -33,6 +33,32 @@
       overflow-x: hidden;
     }
 
+    /* ── MUSIC TOGGLE BUTTON ── */
+    #musicBtn {
+      position: fixed;
+      bottom: 1.6rem;
+      right: 1.6rem;
+      z-index: 8888;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--forest);
+      border: 1.5px solid var(--gold);
+      color: var(--gold);
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(0,0,0,.35);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .6s ease, transform .25s ease, background .25s;
+    }
+    #musicBtn.visible { opacity: 1; pointer-events: auto; }
+    #musicBtn:hover { background: var(--forest-light); transform: scale(1.08); }
+    #musicBtn .music-icon { line-height: 1; }
+
     /* ── HERO ── */
     #hero {
       position: relative;
@@ -115,7 +141,6 @@
       opacity: 0;
       animation: fadeUp .8s .5s forwards;
     }
-    /* ── Arun & Kavana — elegant serif, same line ── */
     .couple-name {
       font-family: 'Cormorant Garamond', Georgia, serif;
       font-size: clamp(2.6rem, 9vw, 7rem);
@@ -594,37 +619,22 @@
     /* ── RESPONSIVE — TABLET (≤768px) ── */
     @media (max-width: 768px) {
       section { padding: 4rem 1.2rem; }
-
       #hero { min-height: 100svh; }
       .hero-content { gap: .75rem; padding: 0 1rem; }
       .hero-tag { font-size: .62rem; letter-spacing: .22em; }
-
       .couple-name { font-size: clamp(2.4rem, 11vw, 5rem); }
-
       .hero-date { gap: .45rem; flex-wrap: wrap; justify-content: center; }
-      .hero-date-month,
-      .hero-date-day,
-      .hero-date-year { font-size: .82rem; letter-spacing: .2em; }
-
+      .hero-date-month, .hero-date-day, .hero-date-year { font-size: .82rem; letter-spacing: .2em; }
       .hero-location { font-size: .72rem; }
-
       .section-title { font-size: clamp(2rem, 7vw, 3rem); }
-
-      /* countdown — hide colon separators when stacking */
       .countdown-grid { gap: 1rem; }
       .countdown-unit { min-width: 70px; }
       .countdown-num { font-size: clamp(2.4rem, 9vw, 4rem); }
       .countdown-sep { font-size: clamp(2rem, 7vw, 3.5rem); }
-
-      /* events — single column */
       .events-grid { grid-template-columns: 1fr; max-width: 480px; margin: 0 auto; }
       .event-card:hover { transform: none; }
-
-      /* buttons — bigger tap targets */
       .btn { padding: .85rem 1.4rem; font-size: .75rem; min-height: 44px; }
       .event-card-actions { gap: .6rem; }
-
-      /* rsvp form */
       .rsvp-form { padding: 2rem 1.2rem; }
       .form-row { grid-template-columns: 1fr; gap: 0; }
       .form-control { font-size: .95rem; padding: .85rem 1rem; min-height: 48px; }
@@ -632,22 +642,16 @@
       .check-item { font-size: .88rem; padding: .3rem 0; }
       .check-item input[type="checkbox"] { width: 20px; height: 20px; }
       .form-submit { padding: 1.1rem; font-size: .82rem; min-height: 52px; }
-
-      /* faq */
       .faq-q { font-size: .98rem; padding: 1rem 1.2rem; min-height: 52px; }
       .faq-a-inner { padding: .9rem 1.2rem 1rem; font-size: .95rem; }
-
-      /* footer */
       .footer-links { gap: 1.2rem; }
     }
 
     /* ── RESPONSIVE — MOBILE (≤480px) ── */
     @media (max-width: 480px) {
       section { padding: 3.5rem 1rem; }
-
       .scripture-banner { padding: .75rem 1rem; }
       .scripture-banner p { font-size: .78rem; line-height: 1.6; }
-
       #hero { min-height: 100svh; }
       .hero-content { gap: .65rem; }
       .couple-name {
@@ -658,48 +662,32 @@
         max-width: 100%;
       }
       .hero-date { gap: .35rem; }
-      .hero-date-month,
-      .hero-date-day,
-      .hero-date-year { font-size: .72rem; letter-spacing: .16em; }
+      .hero-date-month, .hero-date-day, .hero-date-year { font-size: .72rem; letter-spacing: .16em; }
       .hero-date-dot { font-size: .4em; }
       .hero-location { font-size: .68rem; letter-spacing: .1em; }
       .hero-scroll { bottom: 1.5rem; }
-
-      /* countdown — hide separators on very small screens */
       .countdown-sep { display: none; }
       .countdown-grid { gap: .5rem 1.8rem; }
       .countdown-unit { min-width: 60px; }
       .countdown-num { font-size: clamp(2.2rem, 11vw, 3.5rem); }
       .countdown-label { font-size: .58rem; }
-
-      /* section typography */
       .section-title { font-size: clamp(1.9rem, 8vw, 2.6rem); }
       .section-tag { font-size: .6rem; letter-spacing: .22em; }
-
-      /* event cards */
       .event-card-header { padding: 1.4rem 1.4rem 1rem; }
       .event-card-name { font-size: 1.7rem; }
       .event-card-body { padding: 1.4rem; gap: .8rem; }
       .event-card-actions { padding: 0 1.4rem 1.4rem; flex-direction: column; }
       .btn { width: 100%; text-align: center; justify-content: center; }
-
-      /* quote section */
       #greeting { padding: 3rem 1.2rem !important; }
-
-      /* rsvp */
       .rsvp-form { padding: 1.8rem 1rem; border-radius: 4px; }
       .attend-options { flex-direction: column; }
       .attend-opt { min-width: 100%; }
-
-      /* faq */
       .faq-q { font-size: .92rem; }
-
-      /* footer */
       .footer-title { font-size: clamp(1.8rem, 8vw, 2.8rem); }
       .footer-links { gap: 1rem; }
       footer { padding: 3rem 1rem 2rem; }
+      #musicBtn { bottom: 1rem; right: 1rem; width: 44px; height: 44px; font-size: 1.1rem; }
     }
-
 
     /* ── ENVELOPE OVERLAY ── */
     #env-overlay {
@@ -825,11 +813,7 @@
       50%      { box-shadow: 0 6px 22px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.14), inset 0 -2px 5px rgba(0,0,0,0.45), 0 0 0 18px rgba(200,169,110,0); }
     }
     .env-seal.pressing .seal-disc { animation: none; }
-    .seal-emblem {
-      width: 75%; height: 75%;
-      pointer-events: none;
-      position: relative; z-index: 2;
-    }
+    .seal-emblem { width: 75%; height: 75%; pointer-events: none; position: relative; z-index: 2; }
     .seal-crack-svg {
       position: absolute; inset: 0; width: 100%; height: 100%;
       opacity: 0; transition: opacity 0.1s; pointer-events: none;
@@ -850,7 +834,6 @@
       80%  { transform: scale(1.01) rotate(1deg); }
       100% { transform: scale(1) rotate(0deg); }
     }
-    /* card that slides up from envelope */
     .env-card {
       position: absolute;
       left: 8%; right: 8%; bottom: 0;
@@ -867,7 +850,7 @@
       pointer-events: none;
     }
     .env-card.peek { transform: translateY(-52%) translateZ(35px) rotateX(-8deg); opacity: 1; }
-.env-card-names {
+    .env-card-names {
       font-family: "Cormorant Garamond", Georgia, serif;
       font-size: clamp(1.35rem, 4.5vw, 1.85rem);
       font-weight: 300; color: var(--forest);
@@ -891,10 +874,7 @@
       font-weight: 400; letter-spacing: 0.2em;
       text-transform: uppercase; color: var(--forest);
     }
-    .env-card-dot {
-      font-size: 0.5em; color: var(--gold); opacity: 0.7;
-      vertical-align: middle;
-    }
+    .env-card-dot { font-size: 0.5em; color: var(--gold); opacity: 0.7; vertical-align: middle; }
     .env-hint-area {
       display: flex; flex-direction: column; align-items: center; gap: 0.7rem;
       transition: opacity 0.5s ease;
@@ -920,6 +900,16 @@
 </head>
 <body>
 
+<!-- ── BACKGROUND MUSIC ── -->
+<audio id="bgMusic" loop preload="auto">
+  <source src="found-a-love.mp3" type="audio/mpeg" />
+</audio>
+
+<!-- ── MUSIC TOGGLE BUTTON ── -->
+<button id="musicBtn" aria-label="Toggle music" onclick="toggleMusic()">
+  <span class="music-icon" id="musicIcon">🎵</span>
+</button>
+
 <!-- ++ ENVELOPE OVERLAY ++ -->
 <div id="env-overlay">
   <p class="env-invite-tag">You are invited</p>
@@ -933,7 +923,7 @@
       </svg>
     </div>
     <div class="env-card" id="envCard">
-<h2 class="env-card-names">
+      <h2 class="env-card-names">
         <span class="env-card-firstname">Arun</span>
         <span class="env-card-amp">&amp;</span>
         <span class="env-card-firstname">Kavana</span>
@@ -959,14 +949,11 @@
         </svg>
         <div class="seal-disc">
           <svg class="seal-emblem" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <!-- outer thin ring -->
             <circle cx="30" cy="30" r="25.5" stroke="rgba(232,201,122,0.4)" stroke-width="0.7"/>
-            <!-- 4 compass dot accents -->
             <circle cx="30" cy="5.5" r="1.4" fill="rgba(232,201,122,0.5)"/>
             <circle cx="54.5" cy="30" r="1.4" fill="rgba(232,201,122,0.5)"/>
             <circle cx="30" cy="54.5" r="1.4" fill="rgba(232,201,122,0.5)"/>
             <circle cx="5.5" cy="30" r="1.4" fill="rgba(232,201,122,0.5)"/>
-            <!-- 8 petals (flower mandala) -->
             <ellipse cx="30" cy="15" rx="3.4" ry="8" fill="rgba(232,201,122,0.62)"/>
             <ellipse cx="30" cy="15" rx="3.4" ry="8" fill="rgba(232,201,122,0.52)" transform="rotate(45 30 30)"/>
             <ellipse cx="30" cy="15" rx="3.4" ry="8" fill="rgba(232,201,122,0.62)" transform="rotate(90 30 30)"/>
@@ -975,11 +962,8 @@
             <ellipse cx="30" cy="15" rx="3.4" ry="8" fill="rgba(232,201,122,0.52)" transform="rotate(225 30 30)"/>
             <ellipse cx="30" cy="15" rx="3.4" ry="8" fill="rgba(232,201,122,0.62)" transform="rotate(270 30 30)"/>
             <ellipse cx="30" cy="15" rx="3.4" ry="8" fill="rgba(232,201,122,0.52)" transform="rotate(315 30 30)"/>
-            <!-- inner ring cover -->
             <circle cx="30" cy="30" r="8" fill="rgba(58,19,8,0.95)" stroke="rgba(232,201,122,0.6)" stroke-width="0.8"/>
-            <!-- center dot -->
             <circle cx="30" cy="30" r="2.8" fill="rgba(232,201,122,0.88)"/>
-            <!-- 4 tiny spokes in center -->
             <line x1="30" y1="24.5" x2="30" y2="26.5" stroke="rgba(232,201,122,0.55)" stroke-width="0.7"/>
             <line x1="30" y1="33.5" x2="30" y2="35.5" stroke="rgba(232,201,122,0.55)" stroke-width="0.7"/>
             <line x1="24.5" y1="30" x2="26.5" y2="30" stroke="rgba(232,201,122,0.55)" stroke-width="0.7"/>
@@ -1300,12 +1284,56 @@
 </footer>
 
 <script>
+  // ── MUSIC CONTROL ──
+  var music = document.getElementById('bgMusic');
+  var musicBtn = document.getElementById('musicBtn');
+  var musicIcon = document.getElementById('musicIcon');
+  var musicPlaying = false;
+
+  function startMusic() {
+    music.volume = 0;
+    music.play().then(function () {
+      musicPlaying = true;
+      // Fade in over 3 seconds
+      var fadeIn = setInterval(function () {
+        if (music.volume < 0.6) {
+          music.volume = Math.min(music.volume + 0.02, 0.6);
+        } else {
+          clearInterval(fadeIn);
+        }
+      }, 100);
+      // Show toggle button
+      setTimeout(function () {
+        musicBtn.classList.add('visible');
+        musicIcon.textContent = '🎵';
+      }, 600);
+    }).catch(function (err) {
+      // Autoplay blocked — show the button anyway so guest can tap to play
+      console.warn('Autoplay blocked, guest can tap to play:', err);
+      musicBtn.classList.add('visible');
+      musicIcon.textContent = '🎵';
+    });
+  }
+
+  function toggleMusic() {
+    if (music.paused) {
+      music.play();
+      musicPlaying = true;
+      musicIcon.textContent = '🎵';
+      if (music.volume === 0) music.volume = 0.6;
+    } else {
+      music.pause();
+      musicPlaying = false;
+      musicIcon.textContent = '🔇';
+    }
+  }
+
   // ── FLOATING PETALS ──
   (function() {
-    const canvas = document.getElementById('petals-canvas');
-    const ctx = canvas.getContext('2d');
-    let petals = [];
-    const COLORS = ['#c8a96e', '#e0c99a', '#f7f0e3', '#a0b89a', '#ffffff'];
+    var canvas = document.getElementById('petals-canvas');
+    var ctx = canvas.getContext('2d');
+    var petals = [];
+    var COLORS = ['#c8a96e', '#e0c99a', '#f7f0e3', '#a0b89a', '#ffffff'];
     function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
     resize();
     window.addEventListener('resize', resize);
@@ -1315,7 +1343,7 @@
                drift: rand(-0.4, 0.4), rot: rand(0, Math.PI * 2), rotSpeed: rand(-0.02, 0.02),
                color: COLORS[Math.floor(Math.random() * COLORS.length)], opacity: rand(0.25, 0.7) };
     }
-    for (let i = 0; i < 28; i++) { const p = createPetal(); p.y = rand(0, canvas.height); petals.push(p); }
+    for (var i = 0; i < 28; i++) { var p = createPetal(); p.y = rand(0, canvas.height); petals.push(p); }
     function drawPetal(p) {
       ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot);
       ctx.globalAlpha = p.opacity; ctx.fillStyle = p.color;
@@ -1323,7 +1351,7 @@
     }
     function animate() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      petals.forEach((p, i) => {
+      petals.forEach(function(p, i) {
         drawPetal(p); p.y += p.speed; p.x += p.drift; p.rot += p.rotSpeed;
         if (p.y > canvas.height + 20) petals[i] = createPetal();
       });
@@ -1334,9 +1362,9 @@
 
   // ── COUNTDOWN ──
   function updateCountdown() {
-    const target = new Date('2026-09-30T09:00:00+05:30');
-    const diff = target - new Date();
-    if (diff <= 0) { ['cd-days','cd-hours','cd-mins','cd-secs'].forEach(id => document.getElementById(id).textContent = '00'); return; }
+    var target = new Date('2026-09-30T09:00:00+05:30');
+    var diff = target - new Date();
+    if (diff <= 0) { ['cd-days','cd-hours','cd-mins','cd-secs'].forEach(function(id){ document.getElementById(id).textContent = '00'; }); return; }
     document.getElementById('cd-days').textContent  = String(Math.floor(diff / 86400000)).padStart(2,'0');
     document.getElementById('cd-hours').textContent = String(Math.floor((diff % 86400000) / 3600000)).padStart(2,'0');
     document.getElementById('cd-mins').textContent  = String(Math.floor((diff % 3600000) / 60000)).padStart(2,'0');
@@ -1346,25 +1374,22 @@
   setInterval(updateCountdown, 1000);
 
   // ── SCROLL REVEAL ──
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
   }, { threshold: 0.12 });
-  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  document.querySelectorAll('.reveal').forEach(function(el) { observer.observe(el); });
 
   // ── FAQ ACCORDION ──
   function toggleFaq(btn) {
-    const item = btn.closest('.faq-item');
-    const isOpen = item.classList.contains('open');
-    document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+    var item = btn.closest('.faq-item');
+    var isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(function(i) { i.classList.remove('open'); });
     if (!isOpen) item.classList.add('open');
   }
 
   // ── RSVP SUBMIT + EMAIL via Web3Forms ──
-  // Arun's key (arun.salian97@gmail.com) — already active
-  const WEB3FORMS_KEY = '879438f6-5cff-4112-8f42-2153910f7b6b';
-  // Kavana's key — go to https://web3forms.com, sign up with kavanaam2000@gmail.com,
-  // confirm the email, copy the access key and paste it below.
-  const KAVANA_KEY = 'YOUR_KAVANA_KEY_HERE';
+  var WEB3FORMS_KEY = '879438f6-5cff-4112-8f42-2153910f7b6b';
+  var KAVANA_KEY = 'YOUR_KAVANA_KEY_HERE';
 
   function updateGuestNames() {
     var count = parseInt(document.getElementById('guestCount').value) || 1;
@@ -1385,71 +1410,69 @@
   }
 
   async function submitRSVP() {
-    const firstName = document.getElementById('firstName').value.trim();
-    const lastName  = document.getElementById('lastName').value.trim();
+    var firstName = document.getElementById('firstName').value.trim();
+    var lastName  = document.getElementById('lastName').value.trim();
     if (!firstName || !lastName) { alert('Please enter your name.'); return; }
 
-    const attend  = document.querySelector('input[name="attend"]:checked')?.value || 'Not specified';
-    const weddingChecked   = document.getElementById('ev-wedding').checked;
-    const receptionChecked = document.getElementById('ev-reception').checked;
-    const events  = ['ev-wedding','ev-reception']
-                      .filter(id => document.getElementById(id).checked)
-                      .map(id => id === 'ev-wedding' ? 'Wedding (Sep 30, Chikmagalur)' : 'Reception (Oct 02, Mangalore)')
-                      .join(' & ') || 'None selected';
-    const side    = document.getElementById('side').value || 'Not specified';
-    const phone   = document.getElementById('phone').value.trim() || 'Not provided';
-    const guestMessage = document.getElementById('message').value.trim() || '—';
-    const guestCount = parseInt(document.getElementById('guestCount').value) || 1;
-    const guestNames = [];
-    for (let i = 2; i <= guestCount; i++) {
-      const el = document.getElementById('guest-' + i);
+    var attend  = (document.querySelector('input[name="attend"]:checked') || {}).value || 'Not specified';
+    var weddingChecked   = document.getElementById('ev-wedding').checked;
+    var receptionChecked = document.getElementById('ev-reception').checked;
+    var events  = ['ev-wedding','ev-reception']
+                    .filter(function(id){ return document.getElementById(id).checked; })
+                    .map(function(id){ return id === 'ev-wedding' ? 'Wedding (Sep 30, Chikmagalur)' : 'Reception (Oct 02, Mangalore)'; })
+                    .join(' & ') || 'None selected';
+    var side    = document.getElementById('side').value || 'Not specified';
+    var phone   = document.getElementById('phone').value.trim() || 'Not provided';
+    var guestMessage = document.getElementById('message').value.trim() || '—';
+    var guestCount = parseInt(document.getElementById('guestCount').value) || 1;
+    var guestNames = [];
+    for (var i = 2; i <= guestCount; i++) {
+      var el = document.getElementById('guest-' + i);
       if (el && el.value.trim()) guestNames.push(el.value.trim());
     }
 
-    const btn = document.querySelector('.form-submit');
+    var btn = document.querySelector('.form-submit');
     btn.textContent = 'Sending…';
     btn.disabled = true;
 
-    const payload = {
-      subject: `RSVP — ${firstName} ${lastName} · Arun & Kavana Wedding`,
-      from_name: `${firstName} ${lastName}`,
-      name:    `${firstName} ${lastName}`,
-      phone,
+    var payload = {
+      subject: 'RSVP — ' + firstName + ' ' + lastName + ' · Arun & Kavana Wedding',
+      from_name: firstName + ' ' + lastName,
+      name:    firstName + ' ' + lastName,
+      phone: phone,
       attending: attend,
-      events,
-      side,
+      events: events,
+      side: side,
       "Guest Count": guestCount,
       "Guest Names": guestNames.length ? guestNames.join(', ') : '—',
       "Message to Couple": guestMessage,
     };
 
-    // Send to Arun
     try {
-      const res = await fetch('https://api.web3forms.com/submit', {
+      var res = await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify({ access_key: WEB3FORMS_KEY, ...payload }),
+        body: JSON.stringify(Object.assign({ access_key: WEB3FORMS_KEY }, payload)),
       });
-      const data = await res.json();
+      var data = await res.json();
       if (!data.success) console.warn('Arun Web3Forms error:', data);
     } catch(e) { console.warn('Arun email failed:', e); }
 
-    // Send to Kavana (once KAVANA_KEY is set)
     if (KAVANA_KEY !== 'YOUR_KAVANA_KEY_HERE') {
       try {
         await fetch('https://api.web3forms.com/submit', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-          body: JSON.stringify({ access_key: KAVANA_KEY, ...payload }),
+          body: JSON.stringify(Object.assign({ access_key: KAVANA_KEY }, payload)),
         });
       } catch(e) { console.warn('Kavana email failed:', e); }
     }
 
-    const noEventSelected = !weddingChecked && !receptionChecked;
+    var noEventSelected = !weddingChecked && !receptionChecked;
     if (noEventSelected) {
-      document.getElementById('formSuccessMsg').innerHTML = "Thanks for letting us know! We\'ll definitely miss having you there, but completely understand. Hope to catch up with you soon! \u{1F60A}";
+      document.getElementById('formSuccessMsg').innerHTML = "Thanks for letting us know! We'll definitely miss having you there, but completely understand. Hope to catch up with you soon! 😊";
     } else {
-      const seeYouMsg = (!weddingChecked && receptionChecked)
+      var seeYouMsg = (!weddingChecked && receptionChecked)
         ? 'See you on October 2nd!'
         : 'See you on September 30!';
       document.getElementById('seeYouMsg').textContent = seeYouMsg;
@@ -1472,7 +1495,6 @@
     var pressing = false, opened = false, rafId = null, startTime = null;
     var startX = 0, startY = 0;
 
-    // iOS-safe scroll lock
     var _scrollY = 0;
     function lockScroll() {
       _scrollY = window.scrollY || window.pageYOffset;
@@ -1520,7 +1542,6 @@
       hint.textContent = 'Hold to open';
     }
 
-    // Cancel only if finger drifts > DRIFT_PX (avoids false cancels on mobile)
     function onMove(e) {
       if (!pressing) return;
       var dx = e.clientX - startX, dy = e.clientY - startY;
@@ -1535,20 +1556,20 @@
       seal.classList.add('breaking');
       hint.textContent = '';
 
+      // 🎵 Start music immediately — we're still in the user-gesture context
+      startMusic();
+
       setTimeout(function () {
         flap.classList.add('open');
         sealAnchor.classList.add('seal-dropped');
         hintArea.style.opacity = '0';
       }, 560);
 
-      // Unlock envelope clip + slide card up (after flap fully open)
       setTimeout(function () {
-        var envEl = document.getElementById('envelope');
-        var card  = document.getElementById('envCard');
-        if (card)  card.classList.add('peek');
+        var card = document.getElementById('envCard');
+        if (card) card.classList.add('peek');
       }, 950);
 
-      // Hide flap after animation so it never blocks the card
       setTimeout(function () {
         var f = document.getElementById('envFlap');
         if (f) f.style.display = 'none';
@@ -1564,7 +1585,6 @@
       }, 5100);
     }
 
-    // Block iOS long-press callout (prevents zoom-popup on iPhone)
     seal.addEventListener('touchstart', function(e){ e.preventDefault(); }, { passive: false });
     seal.addEventListener('pointerdown',   startPress,  { passive: false });
     seal.addEventListener('pointermove',   onMove,      { passive: true });
