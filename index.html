@@ -1289,40 +1289,56 @@
   var musicBtn = document.getElementById('musicBtn');
   var musicIcon = document.getElementById('musicIcon');
   var musicPlaying = false;
-  var audioUnlocked = false;
+  var audioStarted = false;
 
-  // ── UNIVERSAL AUDIO UNLOCK (iOS + Android) ──
-  // Both platforms block audio.play() unless it originates from a real gesture.
-  // We capture the very first touch/click anywhere on the page and silently
-  // unlock the element (play → immediate pause). After that, play() works from
-  // anywhere — including requestAnimationFrame — on both platforms.
-  function unlockAudio() {
-    if (audioUnlocked) return;
-    audioUnlocked = true;
+  // ── UNIVERSAL SILENT-START UNLOCK (iOS + Android + Desktop) ──
+  //
+  // Mobile browsers (iOS Safari, Android Chrome) NEVER allow autoplay unless
+  // audio.play() is called synchronously inside a real user-gesture handler.
+  // Calling play() from a setTimeout or requestAnimationFrame—even milliseconds
+  // later—is always rejected.
+  //
+  // Strategy: on the very first touch anywhere on the page, start the track
+  // playing at volume 0 and KEEP IT PLAYING SILENTLY. We never call pause().
+  // When the envelope opens, we simply rewind to 0:00 and fade the volume up.
+  // This requires only ONE play() call (the one in the gesture handler), so
+  // there is nothing for the browser's autoplay policy to block the second time.
+  function silentStart() {
+    if (audioStarted) return;
+    audioStarted = true;
     music.volume = 0;
-    music.play().then(function () { music.pause(); music.currentTime = 0; }).catch(function () {});
-    document.removeEventListener('touchstart',  unlockAudio, true);
-    document.removeEventListener('mousedown',   unlockAudio, true);
-    document.removeEventListener('pointerdown', unlockAudio, true);
-  }
-  document.addEventListener('touchstart',  unlockAudio, { capture: true, passive: true });
-  document.addEventListener('mousedown',   unlockAudio, { capture: true, passive: true });
-  document.addEventListener('pointerdown', unlockAudio, { capture: true, passive: true });
-
-  function playMusic() {
-    music.volume = 0;
-    music.currentTime = 0;
-    music.play().then(function () {
-      musicPlaying = true;
-      var fadeIn = setInterval(function () {
-        if (music.volume < 0.6) { music.volume = Math.min(music.volume + 0.02, 0.6); }
-        else { clearInterval(fadeIn); }
-      }, 100);
-      setTimeout(function () { musicBtn.classList.add('visible'); musicIcon.textContent = '🎵'; }, 600);
-    }).catch(function (err) {
-      console.warn('Music play failed:', err);
-      musicBtn.classList.add('visible'); musicIcon.textContent = '🎵';
+    music.play().catch(function (err) {
+      // Still blocked (e.g. no interaction at all yet) — show button as fallback
+      console.warn('Silent start failed:', err);
+      musicBtn.classList.add('visible');
+      musicIcon.textContent = '🎵';
     });
+    document.removeEventListener('touchstart',  silentStart, true);
+    document.removeEventListener('pointerdown', silentStart, true);
+    document.removeEventListener('mousedown',   silentStart, true);
+  }
+  document.addEventListener('touchstart',  silentStart, { capture: true, passive: true });
+  document.addEventListener('pointerdown', silentStart, { capture: true, passive: true });
+  document.addEventListener('mousedown',   silentStart, { capture: true, passive: true });
+
+  // Called when the envelope fully opens — rewind & fade in
+  function playMusic() {
+    music.currentTime = 0;
+    if (music.paused) {
+      // Fallback: try a fresh play() (works on desktop where no prior gesture needed)
+      music.volume = 0;
+      music.play().catch(function (err) {
+        console.warn('playMusic fallback failed:', err);
+        musicBtn.classList.add('visible'); musicIcon.textContent = '🎵';
+        return;
+      });
+    }
+    musicPlaying = true;
+    var fadeIn = setInterval(function () {
+      if (music.volume < 0.6) { music.volume = Math.min(music.volume + 0.02, 0.6); }
+      else { clearInterval(fadeIn); }
+    }, 100);
+    setTimeout(function () { musicBtn.classList.add('visible'); musicIcon.textContent = '🎵'; }, 600);
   }
 
   function toggleMusic() {
