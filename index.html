@@ -1521,6 +1521,12 @@
       seal.classList.add('pressing');
       hint.textContent = 'Keep holding…';
 
+      // iOS blocks autoplay from RAF callbacks. Unlock the audio element RIGHT
+      // HERE while we are still in the synchronous pointerdown handler, then
+      // resume it later after the seal breaks.
+      music.volume = 0;
+      music.play().then(function(){ music.pause(); music.currentTime = 0; }).catch(function(){});
+
       function tick(now) {
         if (!pressing) return;
         var p = Math.min((now - startTime) / HOLD_MS, 1);
@@ -1556,8 +1562,21 @@
       seal.classList.add('breaking');
       hint.textContent = '';
 
-      // 🎵 Start music immediately — we're still in the user-gesture context
-      startMusic();
+      // 🎵 Resume the already-unlocked audio (iOS-safe: no new play() policy check needed)
+      music.volume = 0;
+      music.currentTime = 0;
+      music.play().then(function() {
+        musicPlaying = true;
+        // Fade in over 3 s
+        var fadeIn = setInterval(function() {
+          if (music.volume < 0.6) { music.volume = Math.min(music.volume + 0.02, 0.6); }
+          else { clearInterval(fadeIn); }
+        }, 100);
+        setTimeout(function() { musicBtn.classList.add('visible'); musicIcon.textContent = '🎵'; }, 600);
+      }).catch(function(err) {
+        console.warn('Play failed even after unlock:', err);
+        musicBtn.classList.add('visible'); musicIcon.textContent = '🎵';
+      });
 
       setTimeout(function () {
         flap.classList.add('open');
