@@ -1289,35 +1289,45 @@
   var musicBtn = document.getElementById('musicBtn');
   var musicIcon = document.getElementById('musicIcon');
   var musicPlaying = false;
+  var audioUnlocked = false;
 
-  function startMusic() {
+  // ── UNIVERSAL AUDIO UNLOCK (iOS + Android) ──
+  // Both platforms block audio.play() unless it originates from a real gesture.
+  // We capture the very first touch/click anywhere on the page and silently
+  // unlock the element (play → immediate pause). After that, play() works from
+  // anywhere — including requestAnimationFrame — on both platforms.
+  function unlockAudio() {
+    if (audioUnlocked) return;
+    audioUnlocked = true;
     music.volume = 0;
+    music.play().then(function () { music.pause(); music.currentTime = 0; }).catch(function () {});
+    document.removeEventListener('touchstart',  unlockAudio, true);
+    document.removeEventListener('mousedown',   unlockAudio, true);
+    document.removeEventListener('pointerdown', unlockAudio, true);
+  }
+  document.addEventListener('touchstart',  unlockAudio, { capture: true, passive: true });
+  document.addEventListener('mousedown',   unlockAudio, { capture: true, passive: true });
+  document.addEventListener('pointerdown', unlockAudio, { capture: true, passive: true });
+
+  function playMusic() {
+    music.volume = 0;
+    music.currentTime = 0;
     music.play().then(function () {
       musicPlaying = true;
-      // Fade in over 3 seconds
       var fadeIn = setInterval(function () {
-        if (music.volume < 0.6) {
-          music.volume = Math.min(music.volume + 0.02, 0.6);
-        } else {
-          clearInterval(fadeIn);
-        }
+        if (music.volume < 0.6) { music.volume = Math.min(music.volume + 0.02, 0.6); }
+        else { clearInterval(fadeIn); }
       }, 100);
-      // Show toggle button
-      setTimeout(function () {
-        musicBtn.classList.add('visible');
-        musicIcon.textContent = '🎵';
-      }, 600);
+      setTimeout(function () { musicBtn.classList.add('visible'); musicIcon.textContent = '🎵'; }, 600);
     }).catch(function (err) {
-      // Autoplay blocked — show the button anyway so guest can tap to play
-      console.warn('Autoplay blocked, guest can tap to play:', err);
-      musicBtn.classList.add('visible');
-      musicIcon.textContent = '🎵';
+      console.warn('Music play failed:', err);
+      musicBtn.classList.add('visible'); musicIcon.textContent = '🎵';
     });
   }
 
   function toggleMusic() {
     if (music.paused) {
-      music.play();
+      music.play().catch(function(){});
       musicPlaying = true;
       musicIcon.textContent = '🎵';
       if (music.volume === 0) music.volume = 0.6;
@@ -1521,12 +1531,6 @@
       seal.classList.add('pressing');
       hint.textContent = 'Keep holding…';
 
-      // iOS blocks autoplay from RAF callbacks. Unlock the audio element RIGHT
-      // HERE while we are still in the synchronous pointerdown handler, then
-      // resume it later after the seal breaks.
-      music.volume = 0;
-      music.play().then(function(){ music.pause(); music.currentTime = 0; }).catch(function(){});
-
       function tick(now) {
         if (!pressing) return;
         var p = Math.min((now - startTime) / HOLD_MS, 1);
@@ -1562,21 +1566,8 @@
       seal.classList.add('breaking');
       hint.textContent = '';
 
-      // 🎵 Resume the already-unlocked audio (iOS-safe: no new play() policy check needed)
-      music.volume = 0;
-      music.currentTime = 0;
-      music.play().then(function() {
-        musicPlaying = true;
-        // Fade in over 3 s
-        var fadeIn = setInterval(function() {
-          if (music.volume < 0.6) { music.volume = Math.min(music.volume + 0.02, 0.6); }
-          else { clearInterval(fadeIn); }
-        }, 100);
-        setTimeout(function() { musicBtn.classList.add('visible'); musicIcon.textContent = '🎵'; }, 600);
-      }).catch(function(err) {
-        console.warn('Play failed even after unlock:', err);
-        musicBtn.classList.add('visible'); musicIcon.textContent = '🎵';
-      });
+      // 🎵 Audio was unlocked on first touch — just play it (works on iOS + Android)
+      playMusic();
 
       setTimeout(function () {
         flap.classList.add('open');
