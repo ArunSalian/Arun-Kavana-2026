@@ -1291,54 +1291,63 @@
   var musicPlaying = false;
   var audioStarted = false;
 
-  // ── UNIVERSAL SILENT-START UNLOCK (iOS + Android + Desktop) ──
-  //
-  // Mobile browsers (iOS Safari, Android Chrome) NEVER allow autoplay unless
-  // audio.play() is called synchronously inside a real user-gesture handler.
-  // Calling play() from a setTimeout or requestAnimationFrame—even milliseconds
-  // later—is always rejected.
-  //
-  // Strategy: on the very first touch anywhere on the page, start the track
-  // playing at volume 0 and KEEP IT PLAYING SILENTLY. We never call pause().
-  // When the envelope opens, we simply rewind to 0:00 and fade the volume up.
-  // This requires only ONE play() call (the one in the gesture handler), so
-  // there is nothing for the browser's autoplay policy to block the second time.
+  // Resume Web Audio engine (Android Chrome keeps it suspended until gesture)
+  var _AudioCtx = window.AudioContext || window.webkitAudioContext;
+  var _actx = _AudioCtx ? new _AudioCtx() : null;
+
+  // Core unlock: start track playing silently and keep it playing.
+  // Must be called synchronously from a genuine user-gesture handler.
+  // We NEVER pause after this — so the browser never needs a second play() call.
   function silentStart() {
     if (audioStarted) return;
     audioStarted = true;
+    if (_actx && _actx.state === 'suspended') _actx.resume();
     music.volume = 0;
     music.play().catch(function (err) {
-      // Still blocked (e.g. no interaction at all yet) — show button as fallback
-      console.warn('Silent start failed:', err);
-      musicBtn.classList.add('visible');
-      musicIcon.textContent = '🎵';
+      console.warn('silentStart failed:', err);
+      audioStarted = false; // allow retry on next gesture
     });
-    document.removeEventListener('touchstart',  silentStart, true);
-    document.removeEventListener('pointerdown', silentStart, true);
-    document.removeEventListener('mousedown',   silentStart, true);
   }
-  document.addEventListener('touchstart',  silentStart, { capture: true, passive: true });
-  document.addEventListener('pointerdown', silentStart, { capture: true, passive: true });
-  document.addEventListener('mousedown',   silentStart, { capture: true, passive: true });
+
+  // Document-level capture: fires before any element handler (good for iOS)
+  function silentStartCapture() {
+    silentStart();
+    document.removeEventListener('touchstart',  silentStartCapture, true);
+    document.removeEventListener('pointerdown', silentStartCapture, true);
+    document.removeEventListener('mousedown',   silentStartCapture, true);
+  }
+  document.addEventListener('touchstart',  silentStartCapture, { capture: true, passive: true });
+  document.addEventListener('pointerdown', silentStartCapture, { capture: true, passive: true });
+  document.addEventListener('mousedown',   silentStartCapture, { capture: true, passive: true });
 
   // Called when the envelope fully opens — rewind & fade in
   function playMusic() {
-    music.currentTime = 0;
-    if (music.paused) {
-      // Fallback: try a fresh play() (works on desktop where no prior gesture needed)
+    function doFadeIn() {
+      musicPlaying = true;
       music.volume = 0;
-      music.play().catch(function (err) {
-        console.warn('playMusic fallback failed:', err);
-        musicBtn.classList.add('visible'); musicIcon.textContent = '🎵';
-        return;
+      var fi = setInterval(function () {
+        if (music.volume < 0.6) { music.volume = Math.min(music.volume + 0.02, 0.6); }
+        else { clearInterval(fi); }
+      }, 100);
+      setTimeout(function () { musicBtn.classList.add('visible'); musicIcon.textContent = '🎵'; }, 600);
+    }
+
+    if (!music.paused) {
+      // Already playing silently — just rewind and fade in (happy path)
+      music.currentTime = 0;
+      doFadeIn();
+    } else {
+      // Fallback: silent start failed earlier; try once more
+      // (works on desktop; on mobile this means user hasn't touched yet — very unlikely)
+      if (_actx && _actx.state === 'suspended') _actx.resume();
+      music.volume = 0;
+      music.currentTime = 0;
+      music.play().then(doFadeIn).catch(function (err) {
+        console.warn('playMusic failed:', err);
+        musicBtn.classList.add('visible');
+        musicIcon.textContent = '🎵';
       });
     }
-    musicPlaying = true;
-    var fadeIn = setInterval(function () {
-      if (music.volume < 0.6) { music.volume = Math.min(music.volume + 0.02, 0.6); }
-      else { clearInterval(fadeIn); }
-    }, 100);
-    setTimeout(function () { musicBtn.classList.add('visible'); musicIcon.textContent = '🎵'; }, 600);
   }
 
   function toggleMusic() {
@@ -1611,7 +1620,11 @@
       }, 5100);
     }
 
-    seal.addEventListener('touchstart', function(e){ e.preventDefault(); }, { passive: false });
+    seal.addEventListener('touchstart', function(e) {
+      e.preventDefault();
+      // Guaranteed gesture context on Android Chrome — unlock audio here too
+      silentStart();
+    }, { passive: false });
     seal.addEventListener('pointerdown',   startPress,  { passive: false });
     seal.addEventListener('pointermove',   onMove,      { passive: true });
     seal.addEventListener('pointerup',     cancelPress);
