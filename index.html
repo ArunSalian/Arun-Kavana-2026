@@ -1289,57 +1289,27 @@
   var musicBtn = document.getElementById('musicBtn');
   var musicIcon = document.getElementById('musicIcon');
   var musicPlaying = false;
-  var audioUnlocked = false;
+  var musicStarted = false;
 
-  // Wake up Android Chrome's Web Audio engine (it starts suspended)
-  var _AudioCtx = window.AudioContext || window.webkitAudioContext;
-  var _actx = _AudioCtx ? new _AudioCtx() : null;
-
-  // ── UNLOCK (called on first touch — gesture context) ──
-  // play() then immediate pause() sets the "user-activated" flag on the element
-  // without making any sound. Once set, play() works from anywhere — including
-  // requestAnimationFrame callbacks — on iOS Safari and Android Chrome.
-  function unlockAudio() {
-    if (audioUnlocked) return;
-    audioUnlocked = true;
-    if (_actx && _actx.state === 'suspended') _actx.resume();
-    var p = music.play();
-    if (p && p.then) {
-      p.then(function () {
-        music.pause();
-        music.currentTime = 0;
-      }).catch(function () { audioUnlocked = false; }); // reset so next gesture can retry
-    }
-  }
-
-  // Document capture fires before any element handler — covers iOS Safari
-  function _unlockCapture() {
-    unlockAudio();
-    document.removeEventListener('touchstart',  _unlockCapture, true);
-    document.removeEventListener('pointerdown', _unlockCapture, true);
-    document.removeEventListener('mousedown',   _unlockCapture, true);
-  }
-  document.addEventListener('touchstart',  _unlockCapture, { capture: true, passive: true });
-  document.addEventListener('pointerdown', _unlockCapture, { capture: true, passive: true });
-  document.addEventListener('mousedown',   _unlockCapture, { capture: true, passive: true });
-
-  // ── PLAY (called after envelope opens) ──
+  // playMusic() must be called from a real user-gesture handler.
+  // On mobile it is invoked from pointerup/touchend (see seal listeners below),
+  // which fires when the guest lifts their finger after the hold completes.
+  // On desktop it is called from triggerBreak() directly (no restriction there).
   function playMusic() {
-    function doFadeIn() {
+    if (musicStarted) return;
+    musicStarted = true;
+    music.currentTime = 0;
+    music.volume = 0;
+    music.play().then(function () {
       musicPlaying = true;
-      music.volume = 0;
       var fi = setInterval(function () {
         if (music.volume < 0.6) { music.volume = Math.min(music.volume + 0.02, 0.6); }
         else { clearInterval(fi); }
       }, 100);
       setTimeout(function () { musicBtn.classList.add('visible'); musicIcon.textContent = '🎵'; }, 600);
-    }
-    if (_actx && _actx.state === 'suspended') _actx.resume();
-    music.currentTime = 0;
-    music.volume = 0;
-    music.play().then(doFadeIn).catch(function (err) {
+    }).catch(function (err) {
       console.warn('playMusic failed:', err);
-      // Show button so guest can tap to start manually
+      musicStarted = false;
       musicBtn.classList.add('visible');
       musicIcon.textContent = '🎵';
     });
@@ -1586,8 +1556,9 @@
       seal.classList.add('breaking');
       hint.textContent = '';
 
-      // 🎵 Audio was unlocked on first touch — just play it (works on iOS + Android)
-      playMusic();
+      // 🎵 Music will be started from pointerup/touchend (genuine gesture context).
+      // For desktop (mouse), call it here directly — no autoplay restriction on desktop.
+      if (!('ontouchstart' in window)) playMusic();
 
       setTimeout(function () {
         flap.classList.add('open');
@@ -1617,12 +1588,19 @@
 
     seal.addEventListener('touchstart', function(e) {
       e.preventDefault();
-      // Also unlock here: seal touchstart is the most direct gesture on Android
-      unlockAudio();
     }, { passive: false });
     seal.addEventListener('pointerdown',   startPress,  { passive: false });
     seal.addEventListener('pointermove',   onMove,      { passive: true });
-    seal.addEventListener('pointerup',     cancelPress);
+    seal.addEventListener('pointerup', function (e) {
+      // If the envelope was successfully opened, start music now —
+      // pointerup IS a genuine user-gesture context on all mobile browsers.
+      if (opened) { playMusic(); return; }
+      cancelPress();
+    });
+    seal.addEventListener('touchend', function () {
+      // touchend backup for browsers that fire touch but not pointer events
+      if (opened) playMusic();
+    }, { passive: true });
     seal.addEventListener('pointercancel', cancelPress);
     seal.addEventListener('contextmenu',   function(e){ e.preventDefault(); });
   })();
